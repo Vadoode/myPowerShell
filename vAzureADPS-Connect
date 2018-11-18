@@ -1,0 +1,11 @@
+Install-Module MSOnline
+
+## credentials
+$Cred = Get-Credential
+
+$userName = ''
+$password = ConvertTo-SecureString "" -AsPlainText -Force 
+$Cred = New-Object System.Management.Automation.PSCredential ($userName, $password)
+
+## Connect to Azure AD
+Connect-MsolService -Credential $Cred
