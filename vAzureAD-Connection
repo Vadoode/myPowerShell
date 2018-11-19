@@ -9,3 +9,6 @@ $Cred = New-Object System.Management.Automation.PSCredential ($userName, $passwo
 
 ## Connect to Azure AD
 Connect-MsolService -Credential $Cred
+
+## Create users and assign license
+Import-Csv -Path "C:\users-to-create2.csv" | foreach {New-MsolUser -DisplayName $_.DisplayName -FirstName $_.FirstName -LastName $_.LastName -UserPrincipalName $_.UserPrincipalName -LicenseAssignment $_.AccountSkuId -password $_.password -streetaddress $_.address -PostalCode $_.zip -Title $_.title -state $_.state -PhoneNumber $_.phone -MobilePhone $_.mobile -ForceChangePassword $false -UsageLocation "AU"} | Export-Csv -Path "C:\NewAccountResults.csv"
