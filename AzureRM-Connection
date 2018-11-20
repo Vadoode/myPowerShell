@@ -25,7 +25,7 @@ function selectOne{
     $DropDown.Location = new-object System.Drawing.Size(150,30)
     $DropDown.Size = new-object System.Drawing.Size(230,40)
 
-    ForEach ($Item in $DropDownArray) {
+    ForEach ($Item in $CredentialsArray) {
      [void] $DropDown.Items.Add($Item)
     }
     $DropDown.SelectedIndex = 0
@@ -54,7 +54,7 @@ function selectOne{
 $client = selectOne
 $Cred = $null
 
-If ($client -eq 0) 
+If ($client -ne 0) 
     {
     $UserName = $SavedCreds.GetValue($client - 1)."username"
     $Password = ConvertTo-SecureString $SavedCreds.GetValue($client - 1)."password" -AsPlainText -Force  
