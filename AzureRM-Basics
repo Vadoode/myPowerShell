@@ -1,0 +1,8 @@
+## Got PowerShell 5.0?
+$PSVersionTable.PSVersion
+
+## Install the module
+Install-Module AzureRM
+
+## Import Modules
+Import-Module AzureRM
