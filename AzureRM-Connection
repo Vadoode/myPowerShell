@@ -1,19 +1,70 @@
-## Got PowerShell 5.0?
-$PSVersionTable.PSVersion
+[Array]$CredentialsArray = "Enter Credentials Now"
 
-## Install the module
-Install-Module AzureRM
+$SavedCreds = Import-Csv -Path c:\creds.csv
+$SavedCreds | ForEach-Object {$CredentialsArray = $CredentialsArray + $_.client}
 
-## Import Modules
-Import-Module AzureRM
+# This Function Returns the Selected Value and Closes the Form
 
-## credentials
-$Cred = Get-Credential
+function Return-DropDown {
+ $script:Choice = $DropDown.SelectedIndex
+ $Form.Close()
+}
 
-$userName = ''
-$password = ConvertTo-SecureString "" -AsPlainText -Force 
-$Cred = New-Object System.Management.Automation.PSCredential ($userName, $password)
+function selectOne{
+    [void] [System.Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms")
+    [void] [System.Reflection.Assembly]::LoadWithPartialName("System.Drawing")
 
+
+    $Form = New-Object System.Windows.Forms.Form
+
+    $Form.width = 450
+    $Form.height = 250
+    $Form.Text = ”Choose Client”
+
+    $DropDown = new-object System.Windows.Forms.ComboBox
+    $DropDown.Location = new-object System.Drawing.Size(150,30)
+    $DropDown.Size = new-object System.Drawing.Size(230,40)
+
+    ForEach ($Item in $DropDownArray) {
+     [void] $DropDown.Items.Add($Item)
+    }
+    $DropDown.SelectedIndex = 0
+    $Form.Controls.Add($DropDown)
+
+    $DropDownLabel = new-object System.Windows.Forms.Label
+    $DropDownLabel.Location = new-object System.Drawing.Size(25,30) 
+    $DropDownLabel.size = new-object System.Drawing.Size(100,40) 
+    $DropDownLabel.Text = "Select client"
+    $Form.Controls.Add($DropDownLabel)
+
+    $Button = new-object System.Windows.Forms.Button
+    $Button.Location = new-object System.Drawing.Size(170,100)
+    $Button.Size = new-object System.Drawing.Size(100,30)
+    $Button.Text = "OK"
+    $Button.Add_Click({Return-DropDown})
+    $form.Controls.Add($Button)
+
+    $Form.Add_Shown({$Form.Activate()})
+    [void] $Form.ShowDialog()
+
+
+    return $script:choice
+}
+
+$client = selectOne
+$Cred = $null
+
+If ($client -eq 0) 
+    {
+    $UserName = $SavedCreds.GetValue($client - 1)."username"
+    $Password = ConvertTo-SecureString $SavedCreds.GetValue($client - 1)."password" -AsPlainText -Force  
+
+    $Cred = New-Object System.Management.Automation.PSCredential ($UserName, $Password)
+    }
+Else 
+    {
+    $Cred = Get-Credential
+    }
 
 ## Connect Azure Resource Mgmt
 Connect-AzureRmAccount -Credential $Cred
